@@ -1,0 +1,131 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Guardar Senhas - cofre de senhas criptografado no navegador" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" />
+  <title>Guardar Senhas</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <h1>Guardar Senhas</h1>
+      <p>Cofre de senhas com criptografia local. Nada em texto puro no GitHub.</p>
+    </header>
+
+    <section id="status" class="status" aria-live="polite"></section>
+
+    <section id="lock-screen" class="card">
+      <h2 id="lock-title">Login no cofre</h2>
+      <p id="lock-help">Digite sua senha mestra para abrir o cofre criptografado.</p>
+
+      <form id="unlock-form" class="form" autocomplete="off">
+        <label>
+          Senha mestra
+          <input id="master-password" type="password" required minlength="12" />
+        </label>
+        <label id="confirm-wrap" class="hidden">
+          Confirmar senha mestra
+          <input id="master-confirm" type="password" minlength="12" />
+        </label>
+
+        <button id="unlock-btn" type="submit">Login</button>
+      </form>
+
+      <p class="hint">Use uma senha longa e unica. Ela nao e salva no dispositivo.</p>
+    </section>
+
+    <section id="app-screen" class="hidden">
+      <div class="toolbar card">
+        <label class="search">
+          Buscar
+          <input id="search" type="search" placeholder="Site, usuario ou observacao" />
+        </label>
+        <div class="toolbar-actions">
+          <button id="add-entry" type="button">Nova senha</button>
+          <button id="logout-btn" type="button" class="secondary">Logout</button>
+        </div>
+      </div>
+
+      <section class="card">
+        <h2>Senhas</h2>
+        <div id="entries" class="entries"></div>
+      </section>
+
+      <section class="card">
+        <h2>Sincronizacao</h2>
+        <p>As alteracoes ficam salvas localmente em formato criptografado. Para sincronizar entre dispositivos, baixe o <code>vault.json</code> e envie para o GitHub.</p>
+        <div class="sync-actions">
+          <button id="download-json" type="button">Baixar vault.json</button>
+          <button id="copy-json" type="button" class="secondary">Copiar JSON</button>
+          <label class="file-upload">
+            Importar JSON
+            <input id="import-json" type="file" accept="application/json" />
+          </label>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="entry-dialog">
+    <form id="entry-form" method="dialog" class="form">
+      <h3 id="entry-title">Nova senha</h3>
+      <input id="entry-id" type="hidden" />
+
+      <label>
+        Nome
+        <input id="entry-name" required maxlength="120" />
+      </label>
+      <label>
+        Usuario
+        <input id="entry-user" maxlength="120" />
+      </label>
+      <label>
+        Senha
+        <div class="password-input-wrap">
+          <input id="entry-pass" type="password" required maxlength="256" />
+          <button id="toggle-pass" type="button" class="secondary">Mostrar</button>
+          <button id="gen-pass" type="button" class="secondary">Gerar</button>
+        </div>
+      </label>
+      <label>
+        URL
+        <input id="entry-url" type="url" maxlength="256" placeholder="https://" />
+      </label>
+      <label>
+        Observacoes
+        <textarea id="entry-notes" rows="3" maxlength="600"></textarea>
+      </label>
+
+      <menu class="dialog-actions">
+        <button id="cancel-entry" type="reset" class="secondary">Cancelar</button>
+        <button id="save-entry" type="submit">Salvar</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <template id="entry-template">
+    <article class="entry-card">
+      <div>
+        <h3 class="entry-name"></h3>
+        <p class="entry-user"></p>
+        <div class="entry-password-row">
+          <span class="entry-pass"></span>
+          <button data-action="toggle-pass" type="button" class="secondary">Mostrar senha</button>
+        </div>
+        <p class="entry-updated"></p>
+      </div>
+      <div class="entry-actions">
+        <button data-action="copy-user" type="button" class="secondary">Copiar usuario</button>
+        <button data-action="copy-pass" type="button" class="secondary">Copiar senha</button>
+        <button data-action="edit" type="button">Editar</button>
+        <button data-action="delete" type="button" class="danger">Excluir</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

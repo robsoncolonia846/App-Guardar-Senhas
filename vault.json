@@ -1,0 +1,16 @@
+﻿{
+  "version": 0,
+  "note": "Arquivo inicial. Depois de criar/desbloquear no app, substitua por um vault criptografado.",
+  "kdf": {
+    "name": "PBKDF2",
+    "hash": "SHA-256",
+    "iterations": 310000,
+    "salt": ""
+  },
+  "cipher": {
+    "name": "AES-GCM",
+    "iv": ""
+  },
+  "data": "",
+  "updatedAt": ""
+}
