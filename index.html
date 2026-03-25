@@ -45,7 +45,12 @@
         </label>
         <div class="toolbar-actions">
           <button id="add-entry" type="button">Nova senha</button>
-          <button id="logout-btn" type="button" class="secondary">Logout</button>
+          <label class="file-upload">
+            Importar JSON
+            <input id="import-json" type="file" accept="application/json" />
+          </label>
+          <button id="export-json" type="button">Exportar JSON</button>
+          <button id="logout-btn" type="button" class="danger">Logout</button>
         </div>
       </div>
 
@@ -54,18 +59,6 @@
         <div id="entries" class="entries"></div>
       </section>
 
-      <section class="card">
-        <h2>Sincronizacao</h2>
-        <p>As alteracoes ficam salvas localmente em formato criptografado. Para sincronizar entre dispositivos, baixe o <code>vault.json</code> e envie para o GitHub.</p>
-        <div class="sync-actions">
-          <button id="download-json" type="button">Baixar vault.json</button>
-          <button id="copy-json" type="button" class="secondary">Copiar JSON</button>
-          <label class="file-upload">
-            Importar JSON
-            <input id="import-json" type="file" accept="application/json" />
-          </label>
-        </div>
-      </section>
     </section>
   </main>
 
@@ -109,13 +102,15 @@
   <template id="entry-template">
     <article class="entry-card">
       <div>
-        <h3 class="entry-name"></h3>
-        <p class="entry-user"></p>
+        <div class="entry-header">
+          <h3 class="entry-name"></h3>
+          <span class="entry-updated-inline"></span>
+        </div>
+        <p class="entry-user">Usuario: <strong class="entry-user-value"></strong></p>
         <div class="entry-password-row">
-          <span class="entry-pass"></span>
+          <span class="entry-pass">Senha: <strong class="entry-pass-value"></strong></span>
           <button data-action="toggle-pass" type="button" class="secondary">Mostrar senha</button>
         </div>
-        <p class="entry-updated"></p>
       </div>
       <div class="entry-actions">
         <button data-action="copy-user" type="button" class="secondary">Copiar usuario</button>

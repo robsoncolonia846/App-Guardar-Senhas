@@ -27,8 +27,7 @@ const el = {
   addEntry: document.querySelector("#add-entry"),
   logoutBtn: document.querySelector("#logout-btn"),
   entries: document.querySelector("#entries"),
-  downloadJson: document.querySelector("#download-json"),
-  copyJson: document.querySelector("#copy-json"),
+  exportJson: document.querySelector("#export-json"),
   importJson: document.querySelector("#import-json"),
   entryDialog: document.querySelector("#entry-dialog"),
   entryForm: document.querySelector("#entry-form"),
@@ -83,8 +82,7 @@ function wireEvents() {
 
   el.addEntry.addEventListener("click", () => openEntryDialog());
   el.logoutBtn.addEventListener("click", logoutApp);
-  el.downloadJson.addEventListener("click", downloadVault);
-  el.copyJson.addEventListener("click", copyVaultJson);
+  el.exportJson.addEventListener("click", exportVault);
 
   el.importJson.addEventListener("change", async (event) => {
     await importVaultFromFile(event.target.files?.[0]);
@@ -119,17 +117,17 @@ function wireEvents() {
       return;
     }
     if (action === "toggle-pass") {
-      const passEl = card.querySelector(".entry-pass");
-      if (!passEl) {
+      const passValueEl = card.querySelector(".entry-pass-value");
+      if (!passValueEl) {
         return;
       }
       const visible = card.dataset.passVisible === "1";
       if (visible) {
-        passEl.textContent = `Senha: ${maskPassword(entry.password)}`;
+        passValueEl.textContent = maskPassword(entry.password);
         card.dataset.passVisible = "0";
         button.textContent = "Mostrar senha";
       } else {
-        passEl.textContent = `Senha: ${entry.password}`;
+        passValueEl.textContent = entry.password;
         card.dataset.passVisible = "1";
         button.textContent = "Ocultar senha";
       }
@@ -372,10 +370,10 @@ function renderEntries() {
       node.dataset.id = entry.id;
       node.dataset.passVisible = "0";
       node.querySelector(".entry-name").textContent = entry.name;
-      node.querySelector(".entry-user").textContent = entry.username ? `Usuario: ${entry.username}` : "Usuario:";
-      node.querySelector(".entry-pass").textContent = `Senha: ${maskPassword(entry.password)}`;
+      node.querySelector(".entry-user-value").textContent = entry.username || "";
+      node.querySelector(".entry-pass-value").textContent = maskPassword(entry.password);
 
-      const updatedEl = node.querySelector(".entry-updated");
+      const updatedEl = node.querySelector(".entry-updated-inline");
       updatedEl.textContent = `Atualizado em: ${formatDate(entry.updatedAt)}`;
       fragment.append(node);
     }
@@ -446,28 +444,54 @@ async function onSaveEntry() {
   el.entryDialog.close();
 }
 
-async function downloadVault() {
+async function exportVault() {
   if (!state.sourceVault) {
-    setStatus("Nenhum cofre disponivel para download.", true);
+    setStatus("Nenhum cofre disponivel para exportar.", true);
     return;
   }
-  const blob = new Blob([JSON.stringify(state.sourceVault, null, 2)], { type: "application/json" });
+
+  const fileName = "vault.json";
+  const content = JSON.stringify(state.sourceVault, null, 2);
+
+  if (typeof window.showSaveFilePicker === "function") {
+    try {
+      const fileHandle = await window.showSaveFilePicker({
+        suggestedName: fileName,
+        types: [
+          {
+            description: "JSON",
+            accept: { "application/json": [".json"] },
+          },
+        ],
+      });
+      const writable = await fileHandle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      setStatus("vault.json exportado e salvo.");
+      return;
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setStatus("Exportacao cancelada.");
+        return;
+      }
+      forceDownloadVault(fileName, content);
+      setStatus("Exportado via download. Salve o arquivo na sua pasta da nuvem.");
+      return;
+    }
+  }
+
+  forceDownloadVault(fileName, content);
+  setStatus("Exportado via download. Salve o arquivo na sua pasta da nuvem.");
+}
+
+function forceDownloadVault(fileName, content) {
+  const blob = new Blob([content], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "vault.json";
+  anchor.download = fileName;
   anchor.click();
   URL.revokeObjectURL(url);
-  setStatus("vault.json baixado.");
-}
-
-async function copyVaultJson() {
-  if (!state.sourceVault) {
-    setStatus("Nenhum cofre disponivel para copiar.", true);
-    return;
-  }
-  await copyToClipboard(JSON.stringify(state.sourceVault, null, 2));
-  setStatus("JSON criptografado copiado para a area de transferencia.");
 }
 
 async function importVaultFromFile(file) {

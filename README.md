@@ -20,8 +20,8 @@ python -m http.server 8080
 
 2. Acesse `http://localhost:8080`.
 3. Crie a senha mestra (na primeira execucao) e adicione suas senhas.
-4. Clique em **Baixar vault.json**.
-5. Substitua o `vault.json` do projeto pelo arquivo baixado.
+4. Clique em **Exportar JSON** e salve o arquivo na pasta da nuvem.
+5. Substitua o `vault.json` do projeto pelo arquivo exportado.
 6. Use **Logout** para encerrar a sessao de login.
 
 ## Publicar no GitHub Pages
@@ -46,7 +46,7 @@ git push -u origin main
 
 1. Abra o app, desbloqueie com senha mestra.
 2. Edite/adicione senhas.
-3. Baixe o novo `vault.json`.
+3. Exporte o novo `vault.json`.
 4. Atualize esse arquivo no repositorio e faca commit.
 5. No outro dispositivo, recarregue a pagina para baixar a versao mais recente.
 
